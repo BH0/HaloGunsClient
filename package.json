@@ -1,0 +1,14 @@
+{
+  "name": "halogunsclient",
+  "version": "1.0.0",
+  "description": "A client which communicates with a C# Rest API using the Fetch API ",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "bh0",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^2.0.1"
+  }
+}

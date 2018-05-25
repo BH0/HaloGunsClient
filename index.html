@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+        <title>Halo Guns Client (Electron)</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1"> 
+        <!-- 
+        <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+        --> 
+        <script src="main.js"></script>
+    </head>
+    <body> 
+        <!-- 
+            URL: http://localhost:52835 
+        -->
+
+        <h1>HaloGuns Client</h1> 
+        <table id="table-div" border="1"> 
+            <tr> 
+                <td><h1>Guns</h1></td> 
+            </tr> 
+            <tr> 
+                <th>Technology</th> 
+                <th>Faction</th> 
+                <th>Race</th> 
+                <th>ID</th> 
+            </tr> 
+    
+        </table> 
+
+        <!-- Add Gun --> 
+        <!-- 
+        <div> 
+            <form method="POST"> 
+                <input type="text" name="gun-name"> 
+                <input type="text" name="gun-technology"> 
+                <input type="text" name="gun-faction"> 
+                <input type="text" name="gun-race"> 
+            </form> 
+        </div> 
+        --> 
+
+        <script> 
+            /// App Logic 
+            // fetch('./api/some.json')
+            fetch('http://localhost:52835/api/Gun').then(response =>  {
+                if (response.status !== 200) { 
+                    alert(response.status); 
+                    return; 
+                } 
+
+                // Examine the text in the response
+                response.json().then(guns => {
+                    console.log(guns); 
+                    table = document.getElementById("table-div"); 
+                    for (let i = 0; i < guns.length; i++) { 
+                        let tableRow = document.createElement("tr"); 
+                        
+                        /// Table Data 
+                        let technologyTD = document.createElement("td"); 
+                        let factionTD = document.createElement("td"); 
+                        let raceTD = document.createElement("td"); 
+                        let ID_TD = document.createElement("td"); 
+
+                        let technologyText = document.createTextNode(guns[i].technology); 
+                        let factionText = document.createTextNode(guns[i].faction); 
+                        let raceText = document.createTextNode(guns[i].race); 
+                        let IDText = document.createTextNode(guns[i].ID); 
+
+                        technologyTD.appendChild(technologyText);                         
+                        factionTD.appendChild(factionText);                         
+                        raceTD.appendChild(raceText);                         
+                        ID_TD.appendChild(IDText);                         
+
+                        tableRow.appendChild(technologyTD); 
+                        tableRow.appendChild(factionTD); 
+                        tableRow.appendChild(raceTD); 
+                        tableRow.appendChild(ID_TD); 
+
+                        table.appendChild(tableRow); 
+                    } 
+                    
+                    /// Create Input Form Disguised as Table 
+                    let inputTableRow = document.createElement("tr"); 
+                    
+                    let technologyInputCell = document.createElement("td"); 
+                    let factionInputCell = document.createElement("td"); 
+                    let raceInputCell = document.createElement("td"); 
+                    
+                    let technologyInputField = document.createElement("input"); 
+                    let factionInputField = document.createElement("input"); 
+                    let raceInputField = document.createElement("input"); 
+                    let submitGunButton = document.createElement("button"); 
+                    submitGunButton.innerText = "Add Gun"; 
+
+                    technologyInputField.id = "technology-input-field"; 
+                    factionInputField.id = "faction-input-field"; 
+                    raceInputField.id = "race-input-field"; 
+
+                    technologyInputCell.appendChild(technologyInputField);                     
+                    factionInputCell.appendChild(factionInputField); 
+                    raceInputCell.appendChild(raceInputField); 
+
+                    inputTableRow.appendChild(technologyInputCell); 
+                    inputTableRow.appendChild(factionInputCell); 
+                    inputTableRow.appendChild(raceInputCell); 
+                    inputTableRow.appendChild(submitGunButton); 
+
+                    table.appendChild(inputTableRow); 
+
+                    submitGunButton.addEventListener("click", postNewGun); 
+                }); 
+            }).catch(err => {
+                console.log('Fetch Error :-S', err);
+            }); 
+
+            /// Handle New Gun Request 
+            function postNewGun() { 
+                /* 
+                fetch("http://localhost:52835/api/Gun", { 
+                    method: "POST", 
+                    headers: { 
+                        "Accept": "application/json, text/plain, * /*", 
+                        "content-type": "application/json"          
+                    }, 
+                    body: JSON.stringify({ 
+                        technology: gunTechnology, 
+                        faction: gunFaction, 
+                        race: gunRace 
+                    })
+                    .then(res => res.json())
+                    .then(data => console.log(data)) 
+                }); 
+                */ 
+
+                let gunTechnology = document.getElementById("technology-input-field").value; 
+                let gunFaction = document.getElementById("faction-input-field").value; 
+                let gunRace = document.getElementById("race-input-field").value; 
+
+                let gun = { 
+                    name: "testname", // to be added 
+                    faction: gunFaction, 
+                    race: gunRace, 
+                    type: "testtype", // to be added 
+                    technology: gunTechnology  
+                } 
+
+                fetch('http://localhost:52835/api/Gun', {
+                    method:'POST',
+                    headers: {
+                    'Accept': 'application/json, text/plain, /*',
+                    'Content-type':'application/json'
+                    },
+                    body: JSON.stringify(gun) 
+                }); /* 
+                .then((res) => res.json()).catch(error => console.log(error))
+                .then((data) => console.log(JSON.parse(data))).catch(error => {
+                    console.log(error); 
+                 }); */  
+                 /* 
+                 the above code
+                 *  saves to databse as expected (and code elsewhere is able to get the new data as expected)
+                 * Displays "SyntaxError: Unexpected end of JSON input" error message 
+                 */  
+                  
+                 /* 
+                  fetch('http://localhost:52835/api/Gun', {
+                    method:'POST',
+                    headers: {
+                    'Accept': 'application/json, text/plain, /*',
+                    'Content-type':'application/json'
+                    },
+                    body:JSON.stringify({
+                        name: "TESTING", 
+                        technology: gunTechnology, 
+                        faction: gunFaction, 
+                        race: gunRace, 
+                        type: "to be added" 
+                    })
+                })
+                .then((res) => JSON.parse(res))
+                .then((data) => console.log(data)).catch(error => {
+                    console.log(error); 
+                 }); 
+                 */ 
+            } 
+            </script> 
+    </body> 
+    <script> 
+        require('./renderer.js'); 
+    </script> 
+</html> 
+
+<!-- 
+
+        <tr> 
+            <td>${guns[1].technology}</td> 
+            <td>${guns[1].faction}</td> 
+            <td>${guns[1].race}</td> 
+            <td>${guns[1].ID}</td> 
+        </tr> 
+        <tr> 
+            <td>${guns[2].technology}</td> 
+            <td>${guns[2].faction}</td> 
+            <td>${guns[2].race}</td> 
+            <td>${guns[2].ID}</td> 
+        </tr> 
+        <tr> 
+            <td>${guns[3].technology}</td> 
+            <td>${guns[3].faction}</td> 
+            <td>${guns[3].race}</td> 
+            <td>${guns[3].ID}</td> 
+        </tr> 
+
+        for (let i = 0; i < guns.length; i++) { 
+            document.getElementById("table-div").innerHTML = `
+                <table> 
+                    <tr> 
+                        <td><h1>Guns</h1></td> 
+                    </tr> 
+                    <tr> 
+                        <th>Technology</th> 
+                        <th>Faction</th> 
+                        <th>Race</th> 
+                        <th>ID</th> 
+                    </tr> 
+                    <tr> 
+                        <td>${guns[i].technology}</td> 
+                        <td>${guns[i].faction}</td> 
+                        <td>${guns[i].race}</td> 
+                        <td>${guns[i].ID}</td> 
+                    </tr> 
+                </table> 
+            `; 
+        } 
+
+
+-->
